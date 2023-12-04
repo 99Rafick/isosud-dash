@@ -5,8 +5,8 @@ namespace App\Enums;
 enum ProcessEnum
 {
     public const CATEGORY = [
-        'management' => 'Management',
-        'realisation' => 'Réalisation',
-        'support' => 'Supports'
+        'Management' => 'Management',
+        'Réalisation' => 'Réalisation',
+        'Supports' => 'Supports'
     ];
 }
