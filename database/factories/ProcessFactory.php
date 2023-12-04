@@ -20,7 +20,7 @@ class ProcessFactory extends Factory
     {
         return [
             'name' => $this->faker->name(),
-            'category' => collect(ProcessEnum::class)->random(),
+            'category' => collect(ProcessEnum::CATEGORY)->random(),
             'structure_id' => 1
         ];
     }
