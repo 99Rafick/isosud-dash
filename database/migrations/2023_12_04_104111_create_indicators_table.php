@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('indicators', function (Blueprint $table) {
             $table->id();
             $table->longText('name');
-            $table->string('frequency');
             $table->string('operator');
             $table->string('target_type');
             $table->string('target');
+            $table->foreignIdFor(\App\Models\IndicatorFrequency::class)->constrained();
             $table->foreignIdFor(\App\Models\Process::class)->constrained();
             $table->timestamps();
         });
