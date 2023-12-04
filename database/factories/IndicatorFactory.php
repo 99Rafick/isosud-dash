@@ -20,7 +20,7 @@ class IndicatorFactory extends Factory
     {
         $targetType = collect(IndicatorEnum::TARGET_TYPE)->random();
         return [
-            'name' => $this->faker->text(30),
+            'name' => $this->faker->text(),
             'operator' => collect(IndicatorEnum::OPERATOR)->random(),
             'target_type' => $targetType,
             'target' => $targetType === IndicatorEnum::TARGET_TYPE['date'] ? $this->faker->date : 80,
