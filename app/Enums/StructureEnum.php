@@ -5,12 +5,12 @@ namespace App\Enums;
 enum StructureEnum
 {
     public const DOMAIN = [
-        'economic' => 'Economique'
+        'Economique' => 'Economique'
     ];
 
     public const SECTOR = [
-        'public' => 'Publique',
-        'private' => 'Privé'
+        'Publique' => 'Publique',
+        'Privé' => 'Privé'
     ];
 
 
