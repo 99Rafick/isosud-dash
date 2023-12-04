@@ -2,16 +2,18 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\FilamentEnum;
+use App\Enums\StructureEnum;
 use App\Filament\Resources\StructureResource\Pages;
 use App\Filament\Resources\StructureResource\RelationManagers;
 use App\Models\Structure;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+
 
 class StructureResource extends Resource
 {
@@ -23,29 +25,51 @@ class StructureResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Textarea::make('name')
-                    ->required()
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('domain')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('sector')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('logo')
-                    ->maxLength(255),
+                Forms\Components\Section::make(FilamentEnum::FORM_SECTION_TITLE)
+                    ->description(FilamentEnum::FORM_SECTION_DESCRIPTION)
+                    ->schema([
+                        Forms\Components\Textarea::make('name')
+                            ->label('Nom')
+                            ->required()
+                            ->columnSpanFull(),
+                        Select::make('domain')
+                            ->label('Domaine')
+                            ->native(false)
+                            ->options(StructureEnum::DOMAIN)
+                            ->required(),
+                        Select::make('sector')
+                            ->label('Secteur')
+                            ->native(false)
+                            ->options(StructureEnum::SECTOR)
+                            ->required(),
+                    ])->columns(2),
+                Forms\Components\Section::make('Le Logo de la direction')
+                    ->description("Ce renseignement n'est pas obligatoire")
+                    ->schema([
+                        Forms\Components\FileUpload::make('logo')
+                            ->image()
+                            ->columnSpanFull(),
+                    ])
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+            ->groups([
+                'domain',
+                'sector',
+            ])
             ->columns([
+                Tables\Columns\ImageColumn::make('logo'),
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Nom')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('domain')
+                    ->label('Domaine')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('sector')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('logo')
+                    ->label('Secteur')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -71,14 +95,14 @@ class StructureResource extends Resource
                 Tables\Actions\CreateAction::make(),
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -86,5 +110,5 @@ class StructureResource extends Resource
             'create' => Pages\CreateStructure::route('/create'),
             'edit' => Pages\EditStructure::route('/{record}/edit'),
         ];
-    }    
+    }
 }
