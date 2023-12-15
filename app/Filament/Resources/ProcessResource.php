@@ -4,11 +4,13 @@ namespace App\Filament\Resources;
 
 use App\Enums\FilamentEnum;
 use App\Enums\ProcessEnum;
+use App\Enums\RoleEnum;
 use App\Enums\StructureEnum;
 use App\Filament\Resources\ProcessResource\Pages;
 use App\Filament\Resources\ProcessResource\RelationManagers;
 use App\Models\Process;
 use App\Models\Structure;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
@@ -22,9 +24,13 @@ class ProcessResource extends Resource
 {
     protected static ?string $model = Process::class;
 
+    protected static ?string $navigationGroup = 'Elémént';
+
     protected static ?string $modelLabel = 'Processus';
 
     protected static ?string $pluralModelLabel = 'Processus';
+
+    protected static ?int $navigationSort = 1;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -34,10 +40,10 @@ class ProcessResource extends Resource
                 Forms\Components\Section::make(FilamentEnum::FORM_SECTION_TITLE)
                     ->description(FilamentEnum::FORM_SECTION_DESCRIPTION)
                     ->schema([
-                        Select::make('structure_id')
+                        Select::make('user_id')
                             ->label('Structure')
                             ->native(false)
-                            ->options(Structure::pluck('name', 'id'))
+                            ->options(User::all()->filter(fn ($user) => $user->hasRole(RoleEnum::STRUCTURE))->pluck('name', 'id'))
                             ->required(),
                         Forms\Components\Textarea::make('name')
                             ->label('Nom')

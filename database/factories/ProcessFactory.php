@@ -21,7 +21,7 @@ class ProcessFactory extends Factory
         return [
             'name' => $this->faker->name(),
             'category' => collect(ProcessEnum::CATEGORY)->random(),
-            'structure_id' => 1
+            'user_id' => 2
         ];
     }
 }

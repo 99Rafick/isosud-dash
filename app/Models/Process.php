@@ -14,10 +14,10 @@ class Process extends Model
     protected $fillable = [
         'name',
         'category',
-        'structure_id'
+        'user_id'
     ];
     public function structure(): BelongsTo
     {
-        return $this->belongsTo(Structure::class, 'structure_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
