@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\RoleEnum;
+use App\Enums\StructureEnum;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
@@ -18,6 +19,7 @@ class UserSeeder extends Seeder
         $admin = \App\Models\User::factory()->create([
             'name' => 'Admin',
             'email' => 'admin@bureauisosud.com',
+            'role' => RoleEnum::ADMIN
         ]);
         $admin->assignRole(RoleEnum::ADMIN);
 
@@ -26,7 +28,10 @@ class UserSeeder extends Seeder
         $user = \App\Models\User::factory()->create([
             'name' => 'User',
             'email' => 'user@bureauisosud.com',
+            'role' => RoleEnum::STRUCTURE,
+            'domain' => StructureEnum::DOMAIN['Economique'],
+            'sector' => StructureEnum::SECTOR['Publique']
         ]);
-        $user->assignRole(RoleEnum::USER);
+        $user->assignRole(RoleEnum::STRUCTURE);
     }
 }
