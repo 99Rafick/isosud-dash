@@ -3,23 +3,30 @@
 namespace App\Filament\Resources;
 
 use App\Enums\FilamentEnum;
+use App\Enums\RoleEnum;
 use App\Enums\StructureEnum;
-use App\Filament\Resources\StructureResource\Pages;
-use App\Filament\Resources\StructureResource\RelationManagers;
-use App\Models\Structure;
+use App\Filament\Resources\UserResource\Pages;
+use App\Filament\Resources\UserResource\RelationManagers;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-
-class StructureResource extends Resource
+class UserResource extends Resource
 {
-    protected static ?string $model = Structure::class;
+    protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Administration';
+
+    protected static ?string $modelLabel = 'Utilisateur';
+
+    protected static ?int $navigationSort = 6;
+    protected static ?string $navigationIcon = 'heroicon-o-users';
 
     public static function form(Form $form): Form
     {
@@ -30,8 +37,25 @@ class StructureResource extends Resource
                     ->schema([
                         Forms\Components\Textarea::make('name')
                             ->label('Nom')
+                            ->unique()
                             ->required()
                             ->columnSpanFull(),
+
+                        //todo: hidden if is editing
+                        Forms\Components\TextInput::make('email')
+                            ->email()
+                            ->unique()
+                            ->required(),
+                        Select::make('role')
+                            ->options(RoleEnum::values())
+                            ->required()
+                            ->native(false)
+                            ->reactive()
+                    ])->columns(2),
+
+                Forms\Components\Section::make('Structure')
+                    ->description('Information complémentaire de la structure')
+                    ->schema([
                         Select::make('domain')
                             ->label('Domaine')
                             ->native(false)
@@ -42,35 +66,25 @@ class StructureResource extends Resource
                             ->native(false)
                             ->options(StructureEnum::SECTOR)
                             ->required(),
-                    ])->columns(2),
-                Forms\Components\Section::make('Le Logo de la direction')
-                    ->description("Ce renseignement n'est pas obligatoire")
-                    ->schema([
                         Forms\Components\FileUpload::make('logo')
                             ->image()
                             ->columnSpanFull(),
-                    ])
+                    ])->columns(2)->hidden(fn (callable $get) => $get('role') !== RoleEnum::STRUCTURE),
+
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->groups([
-                'domain',
-                'sector',
-            ])
             ->columns([
-                Tables\Columns\ImageColumn::make('logo'),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nom')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('domain')
-                    ->label('Domaine')
+                Tables\Columns\TextColumn::make('email')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('sector')
-                    ->label('Secteur')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('role')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -103,12 +117,17 @@ class StructureResource extends Resource
         ];
     }
 
+    private static function isEditing(): bool
+    {
+        return request()->routeIs('filament.admin.resources.users.edit');
+    }
+
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListStructures::route('/'),
-            'create' => Pages\CreateStructure::route('/create'),
-            'edit' => Pages\EditStructure::route('/{record}/edit'),
+            'index' => Pages\ListUsers::route('/'),
+            'create' => Pages\CreateUser::route('/create'),
+            'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }
 }
