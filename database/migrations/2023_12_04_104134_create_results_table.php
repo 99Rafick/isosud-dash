@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('results', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(\App\Models\Indicator::class)->constrained();
+            $table->integer('step');
             $table->string('fulfilled');
             $table->boolean('conformity');
             $table->timestamps();
