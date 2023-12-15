@@ -4,8 +4,8 @@ namespace App\Enums;
 
 enum RoleEnum
 {
-    const ADMIN = 'admin';
-    const USER = 'user';
+    const ADMIN = 'ADMIN';
+    const STRUCTURE = 'STRUCTURE';
 
     public static function values(): array
     {
