@@ -19,6 +19,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class ProcessResource extends Resource
 {
@@ -33,6 +34,17 @@ class ProcessResource extends Resource
     protected static ?int $navigationSort = 1;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getEloquentQuery(): Builder
+    {
+        $eloquentQuery = parent::getEloquentQuery();
+
+        if(!RoleEnum::isAdmin()) {
+            $eloquentQuery = $eloquentQuery->where('user_id', '=', Auth::user()->id);
+        }
+
+        return $eloquentQuery;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -42,6 +54,7 @@ class ProcessResource extends Resource
                     ->schema([
                         Select::make('user_id')
                             ->label('Structure')
+                            ->hidden(!RoleEnum::isAdmin())
                             ->native(false)
                             ->options(User::all()->filter(fn ($user) => $user->hasRole(RoleEnum::STRUCTURE))->pluck('name', 'id'))
                             ->required(),
@@ -67,6 +80,7 @@ class ProcessResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('structure_id')
                     ->label('Structure')
+                    ->hidden(!RoleEnum::isAdmin())
                     ->getStateUsing(fn($record) => $record->structure->name)
                     ->badge()
                     ->sortable(),
