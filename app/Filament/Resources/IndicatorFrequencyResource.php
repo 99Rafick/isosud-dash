@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Enums\IndicatorFrequencyEnum;
+use App\Enums\RoleEnum;
 use App\Filament\Resources\IndicatorFrequencyResource\Pages;
 use App\Filament\Resources\IndicatorFrequencyResource\RelationManagers;
 use App\Models\IndicatorFrequency;
@@ -23,6 +24,11 @@ class IndicatorFrequencyResource extends Resource
     protected static ?int $navigationSort = 5;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function canViewAny(): bool
+    {
+        return RoleEnum::isAdmin();
+    }
 
     public static function form(Form $form): Form
     {
