@@ -12,11 +12,11 @@ class CreateIndicator extends CreateRecord
 {
     protected static string $resource = IndicatorResource::class;
 
-    protected function handleRecordCreation(array $data): Model
-    {
-        if ($data['target_type'] === 'date') {
-            $data['target'] = $data['target2'];
-        }
-        return Indicator::create($data);
-    }
+//    protected function handleRecordCreation(array $data): Model
+//    {
+//        if ($data['target_type'] === 'date') {
+//            $data['target'] = $data['target2'];
+//        }
+//        return Indicator::create($data);
+//    }
 }

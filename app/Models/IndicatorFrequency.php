@@ -11,4 +11,11 @@ use Illuminate\Database\Eloquent\Model;
 class IndicatorFrequency extends Model
 {
     use HasFactory;
+
+
+    protected $fillable = [
+        'name',
+        'number_of_month_or_year',
+        'month_or_year'
+    ];
 }

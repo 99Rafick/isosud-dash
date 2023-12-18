@@ -16,7 +16,8 @@ return new class extends Migration
             $table->longText('name');
             $table->string('operator');
             $table->string('target_type');
-            $table->string('target');
+            $table->string('number_target')->nullable();
+            $table->string('date_target')->nullable();
             $table->foreignIdFor(\App\Models\IndicatorFrequency::class)->constrained();
             $table->foreignIdFor(\App\Models\Process::class)->constrained();
             $table->timestamps();

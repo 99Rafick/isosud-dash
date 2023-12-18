@@ -14,7 +14,8 @@ class Indicator extends Model
         'name',
         'operator',
         'target_type',
-        'target',
+        'number_target',
+        'date_target',
         'process_id',
         'indicator_frequency_id',
     ];

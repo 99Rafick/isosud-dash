@@ -19,6 +19,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Sleep;
 use Illuminate\Support\Str;
 
@@ -26,9 +27,7 @@ class IndicatorResource extends Resource
 {
     protected static ?string $model = Indicator::class;
     protected static ?string $modelLabel = 'Indicateur';
-
     protected static ?string $navigationGroup = 'Elémént';
-
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -40,13 +39,13 @@ class IndicatorResource extends Resource
                     ->description(FilamentEnum::FORM_SECTION_DESCRIPTION)
                     ->schema([
                         Select::make('process_id')
-                            ->label('Processus')
+                            ->label('Nom du processus')
                             ->native(false)
                             ->options(Process::pluck('name', 'id'))
                             ->required()
                             ->columnSpanFull(),
                         Forms\Components\Textarea::make('name')
-                            ->label('Nom')
+                            ->label("Intitulé de l'indicateur")
                             ->required()
                             ->columnSpanFull(),
                         Select::make('indicator_frequency_id')
@@ -57,7 +56,7 @@ class IndicatorResource extends Resource
                         Select::make('operator')
                             ->label('Opérateur')
                             ->native(false)
-                            ->options(IndicatorEnum::OPERATOR)
+                            ->options(collect(IndicatorEnum::OPERATOR))
                             ->required(),
                         Select::make('target_type')
                             ->label('Type de la cible')
@@ -66,16 +65,17 @@ class IndicatorResource extends Resource
                             ->required()
                             ->columnSpanFull()
                             ->reactive(),
-                        Forms\Components\TextInput::make('target')
-                            ->label('Cible')
+                        Forms\Components\TextInput::make('number_target')
+                            ->label('Cîble')
+                            ->minValue(0)
+                            ->maxValue(fn (callable $get) =>  $get('target_type') === IndicatorEnum::TARGET_TYPE['nombre'] ? null : 100)
                             ->required()
                             ->numeric()
                             ->columnSpanFull()
                             ->maxLength(255)
                             ->hidden(fn (callable $get) => $get('target_type') === 'date'),
-//                            ->hidden(fn (callable $get) => $get('target_type') !== IndicatorEnum::TARGET_TYPE['date']),
-                        Forms\Components\DatePicker::make('target2')
-                            ->label('Cible')
+                        Forms\Components\DatePicker::make('date_target')
+                            ->label('Cîble')
                             ->native(false)
                             ->columnSpanFull()
                             ->required()
@@ -108,7 +108,16 @@ class IndicatorResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('target')
                     ->label('Cible')
-                    ->getStateUsing(fn ($record) => $record->target_type === IndicatorEnum::TARGET_TYPE['percentage'] ? $record->target . '%' : $record->target)
+                    ->getStateUsing(function ($record) {
+                        if ($record->target_type === IndicatorEnum::TARGET_TYPE['nombre']) {
+                            $target = $record->number_target;
+                        } elseif ($record->target_type === IndicatorEnum::TARGET_TYPE['date']) {
+                            $target = $record->date_target;
+                        } else {
+                            $target = $record->number_target . '%';
+                        }
+                        return $target;
+                    })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

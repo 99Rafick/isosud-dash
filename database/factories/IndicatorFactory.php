@@ -23,7 +23,8 @@ class IndicatorFactory extends Factory
             'name' => $this->faker->text(),
             'operator' => collect(IndicatorEnum::OPERATOR)->random(),
             'target_type' => $targetType,
-            'target' => $targetType === IndicatorEnum::TARGET_TYPE['date'] ? $this->faker->date : 80,
+            'number_target' => $targetType !== IndicatorEnum::TARGET_TYPE['date'] ? 80 : null,
+            'date_target' => $targetType === IndicatorEnum::TARGET_TYPE['date'] ? $this->faker->date : null,
             'indicator_frequency_id' => 1,
             'process_id' => 1
         ];

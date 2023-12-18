@@ -35,7 +35,8 @@ class IndicatorFrequencyResource extends Resource
                 Forms\Components\Select::make('month_or_year')
                     ->label("Mois/Année")
                     ->options(IndicatorFrequencyEnum::MONTH_OR_YEAR)
-                    ->required(),
+                    ->required()
+                    ->native(false),
                 Forms\Components\TextInput::make('number_of_month_or_year')
                     ->label("Nombre de Mois/Année")
                     ->numeric()
