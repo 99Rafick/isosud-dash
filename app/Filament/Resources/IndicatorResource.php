@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\FilamentEnum;
 use App\Enums\IndicatorEnum;
 use App\Enums\ProcessEnum;
+use App\Enums\RoleEnum;
 use App\Filament\Resources\IndicatorResource\Pages;
 use App\Filament\Resources\IndicatorResource\RelationManagers;
 use App\Models\Indicator;
@@ -20,16 +21,30 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Sleep;
 use Illuminate\Support\Str;
 
 class IndicatorResource extends Resource
 {
     protected static ?string $model = Indicator::class;
+
     protected static ?string $modelLabel = 'Indicateur';
     protected static ?string $navigationGroup = 'Elémént';
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function getEloquentQuery(): Builder
+    {
+        $eloquentQuery = parent::getEloquentQuery();
+
+        if(!RoleEnum::isAdmin()) {
+            $processId = Process::where('user_id', Auth::user()->id)->pluck('id');
+            $eloquentQuery = $eloquentQuery->whereIn('process_id', $processId);
+        }
+
+        return $eloquentQuery;
+    }
 
     public static function form(Form $form): Form
     {
@@ -41,7 +56,13 @@ class IndicatorResource extends Resource
                         Select::make('process_id')
                             ->label('Nom du processus')
                             ->native(false)
-                            ->options(Process::pluck('name', 'id'))
+                            ->options(function () {
+                                if (RoleEnum::isAdmin()) {
+                                    return Process::pluck('name', 'id');
+                                } else {
+                                    return Process::where('user_id', '=', Auth::user()->id)->pluck('name', 'id');
+                                }
+                            })
                             ->required()
                             ->columnSpanFull(),
                         Forms\Components\Textarea::make('name')
@@ -84,7 +105,6 @@ class IndicatorResource extends Resource
                     ->columns(2)
             ]);
     }
-
     public static function table(Table $table): Table
     {
         return $table
