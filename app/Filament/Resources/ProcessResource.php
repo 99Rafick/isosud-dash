@@ -7,6 +7,7 @@ use App\Enums\ProcessEnum;
 use App\Enums\RoleEnum;
 use App\Enums\StructureEnum;
 use App\Filament\Resources\ProcessResource\Pages;
+use App\Filament\Resources\ProcessResource\Pages\ProcessByStructure;
 use App\Filament\Resources\ProcessResource\RelationManagers;
 use App\Models\Process;
 use App\Models\Structure;
@@ -78,7 +79,7 @@ class ProcessResource extends Resource
                 'category',
             ])
             ->columns([
-                Tables\Columns\TextColumn::make('structure_id')
+                Tables\Columns\TextColumn::make('user_id')
                     ->label('Structure')
                     ->hidden(!RoleEnum::isAdmin())
                     ->getStateUsing(fn($record) => $record->structure->name)
@@ -130,6 +131,7 @@ class ProcessResource extends Resource
             'index' => Pages\ListProcesses::route('/'),
             'create' => Pages\CreateProcess::route('/create'),
             'edit' => Pages\EditProcess::route('/{record}/edit'),
+            'show_by_structure' => Pages\ProcessByStructure::route('/filter_by_{structure}')
         ];
     }
 }
