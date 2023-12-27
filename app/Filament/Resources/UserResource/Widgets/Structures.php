@@ -21,7 +21,6 @@ class Structures extends BaseWidget
         return $table
             ->query(User::whereHas('roles', fn ($query) => $query->where('roles.name', RoleEnum::STRUCTURE)))
             ->columns([
-
                 Stack::make([
                     Tables\Columns\ImageColumn::make('logo')
                         ->extraAttributes(['class' => 'col-span-1 mb-2']),
@@ -43,7 +42,7 @@ class Structures extends BaseWidget
                 'xl' => 3,
             ])->actions([
                 Action::make('Processus')
-                    ->url('iii')
+                    ->url(fn($record) => route('filament.admin.resources.processes.show_by_structure', ['structure' => $record->id]))
                     ->extraAttributes(['style' => 'justify-content: flex-end !important'])
             ]);
     }
